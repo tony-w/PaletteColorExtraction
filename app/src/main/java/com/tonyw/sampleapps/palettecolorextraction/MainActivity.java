@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +40,12 @@ public class MainActivity extends Activity {
             CardView cardView = (CardView) inflater.inflate(R.layout.card_layout, null);
             ((ImageView) cardView.findViewById(R.id.card_image)).setImageBitmap(bitmap);
             mainView.addView(cardView);
+            // Extract prominent colors asynchronously and then update the card.
+            Palette.generateAsync(bitmap, new Palette.PaletteAsyncListener() {
+                public void onGenerated(Palette palette) {
+                    // Do something with colors...
+                }
+            });
         }
     }
 
