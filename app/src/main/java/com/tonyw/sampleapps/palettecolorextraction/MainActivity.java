@@ -12,55 +12,54 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
+    private ArrayList<CardView> mCards;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mCards = new ArrayList<>();
         try {
             addCards();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        GridView gridview = (GridView) findViewById(R.id.main_view);
+        gridview.setAdapter(new CardAdapter(mCards));
     }
 
     private void addCards() throws IOException {
-        ViewGroup mainView = (ViewGroup) findViewById(R.id.main_view);
-        ViewGroup mainView2 = (ViewGroup) findViewById(R.id.main_view_2);
         LayoutInflater inflater = getLayoutInflater();
         AssetManager assetManager = getAssets();
-        int numCardsAdded = 0;
         for (String assetName : assetManager.list("sample_images")) {
             InputStream assetStream = assetManager.open("sample_images/" + assetName);
             Bitmap bitmap = BitmapFactory.decodeStream(assetStream);
             final CardView cardView = (CardView) inflater.inflate(R.layout.card_layout, null);
             ((ImageView) cardView.findViewById(R.id.card_image)).setImageBitmap(bitmap);
-            if (numCardsAdded++ % 2 == 1 && mainView2 != null) {
-                mainView2.addView(cardView);
-            } else {
-                mainView.addView(cardView);
-            }
+
+            mCards.add(cardView);
+
             // Extract prominent colors asynchronously and then update the card.
             Palette.generateAsync(bitmap, new Palette.PaletteAsyncListener() {
                 public void onGenerated(Palette palette) {
                     GradientDrawable vibrant = (GradientDrawable)
                             cardView.findViewById(R.id.vibrant).getBackground();
-                    vibrant.setColor(palette.getVibrantColor(Color.BLACK));
                     GradientDrawable vibrantDark = (GradientDrawable)
                             cardView.findViewById(R.id.vibrant_dark).getBackground();
                     GradientDrawable vibrantLight = (GradientDrawable)
                             cardView.findViewById(R.id.vibrant_light).getBackground();
                     GradientDrawable muted = (GradientDrawable)
                             cardView.findViewById(R.id.muted).getBackground();
-                    vibrant.setColor(palette.getVibrantColor(Color.BLACK));
                     GradientDrawable mutedDark = (GradientDrawable)
                             cardView.findViewById(R.id.muted_dark).getBackground();
                     GradientDrawable mutedLight = (GradientDrawable)

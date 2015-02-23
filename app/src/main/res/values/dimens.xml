@@ -5,4 +5,5 @@
 
     <dimen name="circle_size">50dp</dimen>
     <dimen name="color_width">100dp</dimen>
+    <dimen name="column_width">310dp</dimen>
 </resources>
