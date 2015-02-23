@@ -32,14 +32,20 @@ public class MainActivity extends Activity {
 
     private void addCards() throws IOException {
         ViewGroup mainView = (ViewGroup) findViewById(R.id.main_view);
+        ViewGroup mainView2 = (ViewGroup) findViewById(R.id.main_view_2);
         LayoutInflater inflater = getLayoutInflater();
         AssetManager assetManager = getAssets();
+        int numCardsAdded = 0;
         for (String assetName : assetManager.list("sample_images")) {
             InputStream assetStream = assetManager.open("sample_images/" + assetName);
             Bitmap bitmap = BitmapFactory.decodeStream(assetStream);
             CardView cardView = (CardView) inflater.inflate(R.layout.card_layout, null);
             ((ImageView) cardView.findViewById(R.id.card_image)).setImageBitmap(bitmap);
-            mainView.addView(cardView);
+            if (numCardsAdded++ % 2 == 1 && mainView2 != null) {
+                mainView2.addView(cardView);
+            } else {
+                mainView.addView(cardView);
+            }
             // Extract prominent colors asynchronously and then update the card.
             Palette.generateAsync(bitmap, new Palette.PaletteAsyncListener() {
                 public void onGenerated(Palette palette) {
