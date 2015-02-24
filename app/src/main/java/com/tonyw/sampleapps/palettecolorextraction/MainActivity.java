@@ -1,19 +1,14 @@
 package com.tonyw.sampleapps.palettecolorextraction;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.CardView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
-import android.widget.ImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,60 +16,47 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
-    private ArrayList<CardView> mCards;
+    private static final int ACTION_ADD_REQUEST_CODE = 0;
+
+    private ArrayList<Bitmap> mBitmaps;
+    private CardAdapter mCardAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mCards = new ArrayList<>();
+        mBitmaps = new ArrayList<>();
+        mCardAdapter = new CardAdapter(this, mBitmaps);
+        GridView gridView = (GridView) findViewById(R.id.main_view);
+        gridView.setAdapter(mCardAdapter);
+
         try {
             addCards();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        GridView gridview = (GridView) findViewById(R.id.main_view);
-        gridview.setAdapter(new CardAdapter(mCards));
     }
 
+    /**
+     * Adds cards with the default images stored in assets.
+     */
     private void addCards() throws IOException {
-        LayoutInflater inflater = getLayoutInflater();
         AssetManager assetManager = getAssets();
         for (String assetName : assetManager.list("sample_images")) {
             InputStream assetStream = assetManager.open("sample_images/" + assetName);
             Bitmap bitmap = BitmapFactory.decodeStream(assetStream);
-            final CardView cardView = (CardView) inflater.inflate(R.layout.card_layout, null);
-            ((ImageView) cardView.findViewById(R.id.card_image)).setImageBitmap(bitmap);
-
-            mCards.add(cardView);
-
-            // Extract prominent colors asynchronously and then update the card.
-            Palette.generateAsync(bitmap, new Palette.PaletteAsyncListener() {
-                public void onGenerated(Palette palette) {
-                    GradientDrawable vibrant = (GradientDrawable)
-                            cardView.findViewById(R.id.vibrant).getBackground();
-                    GradientDrawable vibrantDark = (GradientDrawable)
-                            cardView.findViewById(R.id.vibrant_dark).getBackground();
-                    GradientDrawable vibrantLight = (GradientDrawable)
-                            cardView.findViewById(R.id.vibrant_light).getBackground();
-                    GradientDrawable muted = (GradientDrawable)
-                            cardView.findViewById(R.id.muted).getBackground();
-                    GradientDrawable mutedDark = (GradientDrawable)
-                            cardView.findViewById(R.id.muted_dark).getBackground();
-                    GradientDrawable mutedLight = (GradientDrawable)
-                            cardView.findViewById(R.id.muted_light).getBackground();
-                    vibrant.setColor(palette.getVibrantColor(Color.BLACK));
-                    vibrantDark.setColor(palette.getDarkVibrantColor(Color.BLACK));
-                    vibrantLight.setColor(palette.getLightVibrantColor(Color.BLACK));
-                    muted.setColor(palette.getMutedColor(Color.BLACK));
-                    mutedDark.setColor(palette.getDarkMutedColor(Color.BLACK));
-                    mutedLight.setColor(palette.getLightMutedColor(Color.BLACK));
-                }
-            });
+            assetStream.close();
+            addCard(bitmap);
         }
     }
 
+    /**
+     * Adds the provided bitmap to a list, and repopulates the main GridView with the new card.
+     */
+    private void addCard(Bitmap bitmap) {
+        mBitmaps.add(bitmap);
+        mCardAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,16 +67,31 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (item.getItemId() == R.id.action_add) {
+            // Start Intent to retrieve an image (see OnActivityResult).
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(intent, ACTION_ADD_REQUEST_CODE);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ACTION_ADD_REQUEST_CODE && resultCode == Activity.RESULT_OK)
+            try {
+                InputStream stream = getContentResolver().openInputStream(
+                        data.getData());
+                Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                stream.close();
+                addCard(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
