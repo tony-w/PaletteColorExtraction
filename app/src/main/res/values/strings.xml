@@ -2,7 +2,9 @@
 <resources>
 
     <string name="app_name">Palette Color Extraction</string>
-    <string name="action_add">Add Image</string>
+    <!-- Menu strings -->
+    <string name="add_image_from_storage">Add Image From Storage</string>
+    <string name="add_image_from_camera">Add Image From Camera</string>
 
     <string name="vibrant">Vibrant</string>
     <string name="vibrant_dark">Vibrant Dark</string>

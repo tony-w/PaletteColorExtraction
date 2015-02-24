@@ -17,7 +17,8 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
-    private static final int ACTION_ADD_REQUEST_CODE = 0;
+    private static final int REQUEST_CODE_ACTION_ADD_FROM_STORAGE = 0;
+    private static final int REQUEST_CODE_ACTION_ADD_FROM_CAMERA = 1337;
     private static final String BUNDLE_SAVED_BITMAPS = "bitmaps";
 
     private ArrayList<Bitmap> mBitmaps;
@@ -47,6 +48,8 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
         }
+
+        mCardAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -86,32 +89,45 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_add) {
+        if (R.id.action_add_from_camera == item.getItemId()) {
+            // Start Intent to retrieve an image (see OnActivityResult).
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cameraIntent, REQUEST_CODE_ACTION_ADD_FROM_CAMERA);
+            return true;
+        } else if (R.id.action_add_from_storage == item.getItemId()) {
             // Start Intent to retrieve an image (see OnActivityResult).
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            startActivityForResult(intent, ACTION_ADD_REQUEST_CODE);
+            startActivityForResult(intent, REQUEST_CODE_ACTION_ADD_FROM_STORAGE);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ACTION_ADD_REQUEST_CODE && resultCode == Activity.RESULT_OK)
-            try {
-                InputStream stream = getContentResolver().openInputStream(
-                        data.getData());
-                Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                stream.close();
-                addCard(bitmap);
-                mGridView.smoothScrollToPosition(mBitmaps.size() - 1);
-            } catch (IOException e) {
-                e.printStackTrace();
+        Bitmap bitmap = null;
+        if (Activity.RESULT_OK == resultCode) {
+            if (REQUEST_CODE_ACTION_ADD_FROM_STORAGE == requestCode) {
+                try {
+                    InputStream stream = getContentResolver().openInputStream(
+                            data.getData());
+                    bitmap = BitmapFactory.decodeStream(stream);
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (REQUEST_CODE_ACTION_ADD_FROM_CAMERA == requestCode) {
+                Bundle extras = data.getExtras();
+                bitmap = (Bitmap) extras.get("data");
             }
+        }
+        if (bitmap != null) {
+            addCard(bitmap);
+            mGridView.smoothScrollToPosition(mBitmaps.size() - 1);
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 }
