@@ -27,6 +27,10 @@ public class CardAdapter extends BaseAdapter {
         mBitmaps = bitmaps;
     }
 
+    public void remove(int position) {
+        mBitmaps.remove(position);
+    }
+
     @Override
     public int getCount() {
         return mBitmaps.size();
@@ -79,6 +83,7 @@ public class CardAdapter extends BaseAdapter {
                 mutedLight.setColor(palette.getLightMutedColor(Color.BLACK));
             }
         });
+
         return cardView;
     }
 }

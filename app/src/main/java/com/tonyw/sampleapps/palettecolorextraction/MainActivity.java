@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AbsListView;
 import android.widget.GridView;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     private static final int REQUEST_CODE_ACTION_ADD_FROM_STORAGE = 0;
-    private static final int REQUEST_CODE_ACTION_ADD_FROM_CAMERA = 1337;
+    private static final int REQUEST_CODE_ACTION_ADD_FROM_CAMERA = 1;
     private static final String BUNDLE_SAVED_BITMAPS = "bitmaps";
 
     private ArrayList<Bitmap> mBitmaps;
@@ -40,6 +41,28 @@ public class MainActivity extends Activity {
         mCardAdapter = new CardAdapter(this, mBitmaps);
         mGridView = (GridView) findViewById(R.id.main_view);
         mGridView.setAdapter(mCardAdapter);
+
+        // Make cards dismissible (although it's a shame there is not an undo feature...).
+        SwipeDismissListViewTouchListener touchListener =
+                new SwipeDismissListViewTouchListener(
+                        mGridView,
+                        new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                            @Override
+                            public boolean canDismiss(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismiss(AbsListView view, int[] reverseSortedPositions) {
+                                for (int position : reverseSortedPositions) {
+                                    mCardAdapter.remove(position);
+                                }
+                                mCardAdapter.notifyDataSetChanged();
+                            }
+                        });
+        mGridView.setOnTouchListener(touchListener);
+        // Set this scroll listener to ensure that we don't look for swipes during scrolling.
+        mGridView.setOnScrollListener(touchListener.makeScrollListener());
 
         if (savedInstanceState == null) {
             try {
@@ -121,7 +144,7 @@ public class MainActivity extends Activity {
                 }
             } else if (REQUEST_CODE_ACTION_ADD_FROM_CAMERA == requestCode) {
                 Bundle extras = data.getExtras();
-                bitmap = (Bitmap) extras.get("data");
+                bitmap = (Bitmap) extras.get("data"); // Just a thumbnail, but works okay for this.
             }
         }
         if (bitmap != null) {
