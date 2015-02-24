@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
@@ -17,24 +18,42 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     private static final int ACTION_ADD_REQUEST_CODE = 0;
+    private static final String BUNDLE_SAVED_BITMAPS = "bitmaps";
 
     private ArrayList<Bitmap> mBitmaps;
+    private GridView mGridView;
     private CardAdapter mCardAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mBitmaps = new ArrayList<>();
-        mCardAdapter = new CardAdapter(this, mBitmaps);
-        GridView gridView = (GridView) findViewById(R.id.main_view);
-        gridView.setAdapter(mCardAdapter);
 
-        try {
-            addCards();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if (savedInstanceState != null) {
+            mBitmaps = savedInstanceState.getParcelableArrayList(BUNDLE_SAVED_BITMAPS);
+        } else {
+            mBitmaps = new ArrayList<>();
         }
+
+        mCardAdapter = new CardAdapter(this, mBitmaps);
+        mGridView = (GridView) findViewById(R.id.main_view);
+        mGridView.setAdapter(mCardAdapter);
+
+        if (savedInstanceState == null) {
+            try {
+                addCards();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle savedState) {
+        super.onSaveInstanceState(savedState);
+
+        savedState.putParcelableArrayList(BUNDLE_SAVED_BITMAPS, mBitmaps);
     }
 
     /**
@@ -89,6 +108,7 @@ public class MainActivity extends Activity {
                 Bitmap bitmap = BitmapFactory.decodeStream(stream);
                 stream.close();
                 addCard(bitmap);
+                mGridView.smoothScrollToPosition(mBitmaps.size() - 1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
