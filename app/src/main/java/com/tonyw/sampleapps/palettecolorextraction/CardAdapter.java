@@ -56,16 +56,19 @@ public class CardAdapter extends BaseAdapter {
     }
 
     public void remove(int position) {
+        if (mDismissedBitmap == null) {
+            // Allow user to under one dismissal.
+            SuperActivityToast mUndoToast = new SuperActivityToast((Activity) mContext,
+                    SuperToast.Type.BUTTON);
+            mUndoToast.setDuration(SuperToast.Duration.EXTRA_LONG);
+            mUndoToast.setText("Card dismissed.");
+            mUndoToast.setButtonIcon(SuperToast.Icon.Dark.UNDO, "UNDO");
+            mUndoToast.setOnClickWrapper(onUndoClickWrapper);
+            mUndoToast.show();
+        }
+
         mDismissedBitmap = mBitmaps.remove(position);
         mDismissedPosition = position;
-
-        SuperActivityToast mUndoToast = new SuperActivityToast((Activity) mContext,
-                SuperToast.Type.BUTTON);
-        mUndoToast.setDuration(SuperToast.Duration.EXTRA_LONG);
-        mUndoToast.setText("Card dismissed.");
-        mUndoToast.setButtonIcon(SuperToast.Icon.Dark.UNDO, "UNDO");
-        mUndoToast.setOnClickWrapper(onUndoClickWrapper);
-        mUndoToast.show();
     }
 
     @Override
