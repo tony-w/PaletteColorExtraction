@@ -7,14 +7,20 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Parcelable;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.github.johnpersano.supertoasts.SuperActivityToast;
+import com.github.johnpersano.supertoasts.SuperToast;
+import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 
 import java.util.ArrayList;
 
@@ -24,14 +30,42 @@ import java.util.ArrayList;
 public class CardAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<Bitmap> mBitmaps;
+    /** The GridView using this adapter. Used as a horrible hack to scroll to a position. */
+    private GridView mGridView;
 
-    public CardAdapter(Context context, ArrayList<Bitmap> bitmaps) {
+    // Variables for undo feature.
+    private Bitmap mDismissedBitmap;
+    private int mDismissedPosition;
+    OnClickWrapper onUndoClickWrapper = new OnClickWrapper("undoclickwrapper",
+            new SuperToast.OnClickListener() {
+        @Override
+        public void onClick(View view, Parcelable token) {
+            if (mDismissedBitmap != null) {
+                mBitmaps.add(mDismissedPosition, mDismissedBitmap);
+                notifyDataSetChanged();
+                mGridView.smoothScrollToPosition(mDismissedPosition);
+                mDismissedBitmap = null;
+            }
+        }
+    });
+
+    public CardAdapter(Context context, ArrayList<Bitmap> bitmaps, GridView gridView) {
         mContext = context;
         mBitmaps = bitmaps;
+        mGridView = gridView;
     }
 
     public void remove(int position) {
-        mBitmaps.remove(position);
+        mDismissedBitmap = mBitmaps.remove(position);
+        mDismissedPosition = position;
+
+        SuperActivityToast mUndoToast = new SuperActivityToast((Activity) mContext,
+                SuperToast.Type.BUTTON);
+        mUndoToast.setDuration(SuperToast.Duration.EXTRA_LONG);
+        mUndoToast.setText("Card dismissed.");
+        mUndoToast.setButtonIcon(SuperToast.Icon.Dark.UNDO, "UNDO");
+        mUndoToast.setOnClickWrapper(onUndoClickWrapper);
+        mUndoToast.show();
     }
 
     @Override

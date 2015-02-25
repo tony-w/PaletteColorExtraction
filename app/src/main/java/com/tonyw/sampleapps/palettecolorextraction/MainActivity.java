@@ -38,8 +38,8 @@ public class MainActivity extends Activity {
             mBitmaps = new ArrayList<>();
         }
 
-        mCardAdapter = new CardAdapter(this, mBitmaps);
         mGridView = (GridView) findViewById(R.id.main_view);
+        mCardAdapter = new CardAdapter(this, mBitmaps, mGridView);
         mGridView.setAdapter(mCardAdapter);
 
         // Make cards dismissible (although it's a shame there is not an undo feature...).
