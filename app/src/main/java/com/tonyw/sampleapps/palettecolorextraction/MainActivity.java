@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         mCardAdapter = new CardAdapter(this, mBitmaps, mGridView);
         mGridView.setAdapter(mCardAdapter);
 
-        // Make cards dismissible (although it's a shame there is not an undo feature...).
+        // Make cards dismissible.
         SwipeDismissListViewTouchListener touchListener =
                 new SwipeDismissListViewTouchListener(
                         mGridView,
