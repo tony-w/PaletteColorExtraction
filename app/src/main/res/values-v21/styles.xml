@@ -7,5 +7,13 @@
         <item name="android:colorPrimaryDark">#1976D2</item>
         <!--   theme UI controls like checkboxes and text fields -->
         <item name="android:colorAccent">#A5D6A7</item>
+
+        <!-- enable window content transitions -->
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+
+        <!-- specify enter and exit transitions -->
+        <item name="android:windowEnterTransition">@transition/fade</item>
+        <item name="android:windowExitTransition">@transition/fade</item>
     </style>
 </resources>

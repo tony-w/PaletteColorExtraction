@@ -1,7 +1,5 @@
 package com.tonyw.sampleapps.palettecolorextraction;
 
-import android.animation.Animator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ClipData;
@@ -10,15 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.graphics.Palette;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.widget.Toast;
 
 /**
@@ -134,7 +128,7 @@ public class ExtractPaletteColorsAsyncTask extends AsyncTask<Bitmap, Void, Palet
             colorWithTextIntent.putExtra(ColorWithTextActivity.EXTRA_BODY_TEXT_COLOR,
                     bodyTextColor);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                startRevealAnimation(v); // currently doesn't work right!
+                //startRevealAnimation(v); // currently doesn't work right!
                 mContext.startActivity(colorWithTextIntent,
                         ActivityOptions.makeSceneTransitionAnimation((Activity) mContext).toBundle());
             } else {
@@ -142,25 +136,4 @@ public class ExtractPaletteColorsAsyncTask extends AsyncTask<Bitmap, Void, Palet
             }
         }
     };
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void startRevealAnimation(View view) {
-        int cx = (view.getLeft() + view.getRight()) / 2;
-        int cy = (view.getTop() + view.getBottom()) / 2;
-
-        // get the final radius for the clipping circle
-        Display display = ((Activity) mContext).getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-        view.setClipBounds(new Rect(0, 0, width, height));
-        int finalRadius = Math.max(width, height);
-
-        // create the animator for this view (the start radius is zero)
-        Animator anim =
-                ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
-
-        anim.start();
-    }
 }

@@ -41,6 +41,7 @@
                     android:id="@+id/vibrant"
                     android:layout_width="@dimen/circle_size"
                     android:layout_height="@dimen/circle_size"
+                    
                     android:background="@drawable/circle" />
             </LinearLayout>
 
