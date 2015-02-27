@@ -2,7 +2,9 @@ package com.tonyw.sampleapps.palettecolorextraction;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Build;
 import android.transition.TransitionValues;
 import android.transition.Visibility;
@@ -17,15 +19,30 @@ import android.view.ViewGroup;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class CircularRevealTransition extends Visibility {
     /** The x-coordinate of the revealing circle. */
-    public static int x;
+    private static int x;
     /** The y-coordinate of the revealing circle. */
-    public static int y;
+    private static int y;
 
     public CircularRevealTransition() {
     }
 
     public CircularRevealTransition(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    /**
+     * Set the start position of a the animation by passing in a view where the revealing circle
+     * will originate.
+     */
+    public static void setStartPosition(Activity activity, View v) {
+        Rect rect = new Rect();
+        v.getGlobalVisibleRect(rect);
+        x = rect.centerX();
+        y = rect.centerY()
+                // Subtract off height of action bar and status bar, which apparently isn't
+                // done when calculating the global visible rect... (status bar height=25dp)
+                - activity.getActionBar().getHeight()
+                - (int) Math.ceil(25 * activity.getResources().getDisplayMetrics().density);
     }
 
     @Override

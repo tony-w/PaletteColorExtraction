@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -129,14 +128,7 @@ public class ExtractPaletteColorsAsyncTask extends AsyncTask<Bitmap, Void, Palet
             colorWithTextIntent.putExtra(ColorWithTextActivity.EXTRA_BODY_TEXT_COLOR,
                     bodyTextColor);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Rect rect = new Rect();
-                v.getGlobalVisibleRect(rect);
-                CircularRevealTransition.x = rect.centerX();
-                CircularRevealTransition.y = rect.centerY()
-                        // Subtract off height of action bar and status bar, which apparently isn't
-                        // done when calculating the global visible rect... (status bar height=25dp)
-                        - ((Activity) mContext).getActionBar().getHeight()
-                        - (int) Math.ceil(25 * mContext.getResources().getDisplayMetrics().density);
+                CircularRevealTransition.setStartPosition((Activity) mContext, v);
                 mContext.startActivity(colorWithTextIntent,
                         ActivityOptions.makeSceneTransitionAnimation(
                                 (Activity) mContext).toBundle());
