@@ -13,7 +13,7 @@
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
 
         <!-- specify enter and exit transitions -->
-        <item name="android:windowEnterTransition">@transition/fade</item>
-        <item name="android:windowExitTransition">@transition/fade</item>
+        <item name="android:windowEnterTransition">@transition/circular_reveal</item>
+        <item name="android:windowExitTransition">@transition/circular_reveal</item>
     </style>
 </resources>

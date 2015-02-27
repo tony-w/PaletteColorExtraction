@@ -24,7 +24,7 @@ public class ColorWithTextActivity extends Activity {
         int backgroundColor = callingIntent.getIntExtra(EXTRA_BACKGROUND_COLOR, Color.WHITE);
         int titleTextColor = callingIntent.getIntExtra(EXTRA_TITLE_TEXT_COLOR, Color.BLACK);
         int bodyTextColor = callingIntent.getIntExtra(EXTRA_BODY_TEXT_COLOR, Color.BLACK);
-        findViewById(R.id.main_view).setBackgroundColor(backgroundColor);
+        findViewById(R.id.color_background).setBackgroundColor(backgroundColor);
         ((TextView) findViewById(R.id.title_text)).setTextColor(titleTextColor);
         ((TextView) findViewById(R.id.body_text)).setTextColor(bodyTextColor);
     }

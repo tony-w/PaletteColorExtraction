@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
             mBitmaps = new ArrayList<>();
         }
 
-        mGridView = (GridView) findViewById(R.id.main_view);
+        mGridView = (GridView) findViewById(R.id.color_background);
         mCardAdapter = new CardAdapter(this, mBitmaps, mGridView);
         mGridView.setAdapter(mCardAdapter);
 
