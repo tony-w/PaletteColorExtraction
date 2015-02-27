@@ -14,6 +14,6 @@
     <string name="muted_light">Muted Light</string>
 
     <string name="title_text">Title Text</string>
-    <string name="body_text">Body text (these text colors were extracted based on background color)\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="body_text">The title and body text colors on this page are extracted from the background color using the Palette.Swatch class. For example, after getting a Palette instance from Palette.generate() or Palette.generateAsync(), you can call a method like palette.getVibrantSwatch() to get a Palette.Swatch instance. Then, you can call methods paletteSwatch.getTitleTextColor() and paletteSwatch.getBodyTextColor() to get colors such as the ones displayed here.</string>
 
 </resources>
